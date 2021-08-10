@@ -1,2 +1,2 @@
 # aim-expedia-takehome
-Code and documentation for Expedia/AIM Takehome
+Code and documentation for Expedia/AIM Takehome Project
