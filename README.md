@@ -8,6 +8,18 @@ This code ingests a modest quantity of data from S3 on meteorite impacts (\~11 M
 	- Average Meteorite Mass
 	- Year with Highest Count of Meteorite Impacts (`fall status attribute == "Fell"`)
 
+# data flow
+
+The structure of this ETL is as follows:
+- create S3 client
+- validate access to provided S3 bucket
+- retrieve a list of keys for relevant input data
+- build a pandas DataFrame using the input data
+- clean said DataFrame and filter for only necessary values and columns
+- perform and surface final aggregations
+
+There is logging throughout this process at the `INFO` level to provide transparency into the data at each step of the flow.
+
 # assumptions
 
 The code assumes consistency in the input schema, and based on exploration of the provided data, assumes consistency in the timestamp format.
