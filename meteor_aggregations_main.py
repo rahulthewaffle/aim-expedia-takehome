@@ -15,14 +15,14 @@ if __name__ == '__main__':
 
     logger = setup_logger(logdir)
 
-    logger.debug(f'{sys.argv[0]} starting up, arguments: Bucket = {bucket}, logdir = {logdir}.')
+    logger.info(f'{sys.argv[0]} starting up, arguments: Bucket = {bucket}, logdir = {logdir}.')
 
     avg_mass, max_years = final_aggregations(bucket, logger)
     
     avg_string = 'Average meteorite mass is ' + avg_mass + '.'
-    logger.debug(avg_string)
+    logger.info(avg_string)
     print(avg_string)
 
     max_string = 'The year(s) with the highest meteorite counts are ' + max_years + '.'
-    logger.debug(max_string)
+    logger.info(max_string)
     print(max_string)

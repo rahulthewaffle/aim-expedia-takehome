@@ -41,4 +41,4 @@ Logging is set to a default local directory `tmp/logs/log_<datetime>.log`. Via C
 
 The ingested S3 bucket can be similarly set as `--bucket` and defaults to `majorly-meteoric`.
 
-If the default options are fine, running the code is as simple as opening your CLI, `cd`ing to the directory where you've downloaded my python script, typing `python meteor_aggregations_main`, and hitting enter.
+If the default options are fine, running the code is as simple as opening your CLI, `cd`ing to the directory where you've downloaded the python scripts, typing `python meteor_aggregations_main.py`, and hitting enter.
