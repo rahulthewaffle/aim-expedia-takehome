@@ -7,22 +7,47 @@ import argparse
 
 def create_client(logger):
 	try:
+		logger.info(f'Creating S3 client.')
 		client = boto3.client('s3')
-		logger.info(f'Attempting to connect to AWS and create S3 client.')
-	except Exception as e:
-		exc_str = f'Error connecting to AWS and creating S3 client. Exception raised:\n{e}'
-        logger.exception(exc_str)
+		return client
+	except ClientError as e:
+		err_str = f'Error connecting to AWS and creating S3 client. Exception raised:\n{e}'
+        logger.error(err_str)
 		raise
 
-def test_bucket_connection(bucket, client, logger):
-	response = client.head_bucket(Bucket=bucket)
-	
-
+def test_bucket(bucket, client, logger):
+	try:
+		logger.info(f'Making HEAD call to S3 bucket {bucket}.')
+		response = client.head_bucket(Bucket=bucket)
+	except (ClientError, NoSuchBucket) as e:
+		err_str = f'Error making HEAD call to S3 bucket {bucket}. Exception raised:\n{e}'
+		logger.error(err_str)
+		raise
 
 def build_key_list(bucket, client, logger):
-	if test_bucket_connection(bucket, client, logger):
-		########
-		return s3_keys
+	logger.info('Building key list.')
+	test_bucket(bucket, client, logger)
+	s3_keys = []
+	continuation_token = 'check'
+	while len(continuation_token) != 0:
+		try:
+			logger.info(f'Retrieving list of objects in {bucket}.')
+			response = client.list_objects_v2(Bucket=bucket)
+		except (ClientError, NoSuchBucket) as e:
+			err_str = f'Error listing objects in S3 bucket {bucket}. Exception raised:\n{e}'
+			logger.error(err_str)
+			raise
+
+		contents = response.get('Contents')
+		continuation_token = response.get('NextContinuationToken')
+
+		for x in contents:
+			key = x.get('key')
+			s3_keys.append(key)
+
+	key_count = str(len(s3_keys))
+	logger.debug(f'Retrieved {key_count} keys from {bucket}:\n{keys}')
+	return s3_keys
 
 def generate_dataframe(bucket, logger):
 	client = create_client(logger)
@@ -31,13 +56,12 @@ def generate_dataframe(bucket, logger):
 	raw_df = pd.DataFrame()
 
 	for key in s3_keys:
-		response = client.get_object(Bucket=bucket, Key=key)
-
-		status = response.get('ResponseMetadata', {}).get('HTTPStatusCode')
-		if status != 200:
-			err_str = f'Failed to retrieve S3 object {key} from {bucket}. Status:\n{status}'
+		try:
+			response = client.get_object(Bucket=bucket, Key=key)
+		except (ClientError, NoSuchKey, InvalidObjectState) as e:
+			err_str = f'Failed to retrieve S3 object {key} from {bucket}. Exception raised:\n{e}'
 			logger.error(err_str)
-			raise ValueError(err_str)
+			raise
 
 		payload = response.get('Body')
 		raw_df = raw_df.append(pd.read_json(payload))
