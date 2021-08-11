@@ -48,7 +48,7 @@ Filepaths are flexible for use in both Unix and Windows.
 In order for the code's boto3 calls to access S3, you will need to install the aws CLI and provide your access credentials via the `aws configure` command.
 	This is preferable to hard-coding credentials, and equivalent to using and configuring a local `credentials.ini` file.
 
-Python depdencies and specific versions used can be found in `dependencies.txt`.
+Python dependencies and specific versions used can be found in `dependencies.txt`.
 
 Although it shouldn't matter, I would recommend running this code in a separate Python environment using venv or conda.
 
