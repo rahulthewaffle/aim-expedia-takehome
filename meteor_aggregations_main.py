@@ -23,6 +23,6 @@ if __name__ == '__main__':
     logger.info(avg_string)
     print(avg_string)
 
-    max_string = 'The year(s) with the highest meteorite counts are ' + max_years + '.'
+    max_string = 'The year(s) with the highest meteorite counts is ' + max_years + '.'
     logger.info(max_string)
     print(max_string)

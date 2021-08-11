@@ -12,7 +12,7 @@ def setup_logger(logdir):
 
     logging.basicConfig(filename=log_path,
                         filemode='w',
-                        format='%(asctime)s|%(levelname)s|%(message)s',
+                        format='%(asctime)s|%(levelname)s|%(message)s\n',
                         datefmt='%Y-%m-%d %H:%M:%S',
                         level = logging.INFO)
 

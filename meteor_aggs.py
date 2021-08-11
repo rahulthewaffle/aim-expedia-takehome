@@ -51,7 +51,7 @@ def build_key_list(bucket, client, logger):
     logger.info(f'Retrieved {key_count} keys from {bucket}:\n{s3_keys}')
     return s3_keys
 
-# Reading meteorite JSONs and generating unprocessed dataframe.
+# Reading meteor JSONs and generating unprocessed dataframe.
 def generate_dataframe(bucket, logger):
     client = create_client(logger)
     s3_keys = build_key_list(bucket, client, logger)
@@ -72,7 +72,10 @@ def generate_dataframe(bucket, logger):
         try:
         	raw_df = raw_df.append(pd.read_json(payload))
         except (ValueError, TypeError) as e:
-        	err_str = f'Error occured when processing json {key} into DataFrame. Exception raised:\n{e}'
+        	warn_str = f'''Error occured when processing json {key} into DataFrame.
+        	 Aggregations may not be valid, consult logs and inspect input data.'''
+        	logger.warning(f'{warn_str}  Exception raised:\n{e}')
+        	print(f'Warning: {warn_str}')
         	continue
 
     logger.info(f'Unprocessed dataframe shape: {raw_df.shape}.')
@@ -80,7 +83,7 @@ def generate_dataframe(bucket, logger):
     return raw_df
 
 # Cleaning unprocessed dataframe.
-def clean_meteorite_data(bucket, logger):
+def clean_meteor_data(bucket, logger):
     raw_df = generate_dataframe(bucket, logger)
 
     cleaned_df = raw_df[['name', 'id', 'mass', 'fall', 'year']]
@@ -93,7 +96,7 @@ def clean_meteorite_data(bucket, logger):
     return cleaned_df
 
 def final_aggregations(bucket, logger):
-    cleaned_df = clean_meteorite_data(bucket, logger)
+    cleaned_df = clean_meteor_data(bucket, logger)
 
     count_df = cleaned_df.groupby('year').year.agg(['count']).reset_index()
     max_count = count_df['count'].max()

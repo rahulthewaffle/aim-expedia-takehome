@@ -21,6 +21,12 @@ In order to retrieve the JSON buckets from S3, the code first generates a list o
 - Between the time that an object name is listed and the time the object is retrieved, the object's availability in the bucket has not changed. If a bucket cannot be retrieved when using the key yielded in the API call `list_objects_v2`, an error is logged and an exception raised, with recommendation to validate the S3 permissions and retry.
 - The S3 bucket does not contain objects with duplicate keys.
 
+# notable issues with `data042.json`
+
+The input files `data042.json` is poor quality and has numerous issues. To both alert the user to data quality issues and avoid breaking the entire process, there is exception handling in the `meteor_aggs.generate_dataframe()` method that handles and warns about bad input json's.
+
+Reporting aggregations are not the place to repair data quality. That should happen upstream via automation, or in the case of obvious manually-caused error, on an ad-hoc basis. I have created a repaired version of that file and you can compare both in this repository under `bad_data/`, but I have **not** changed the file in S3. Corrections have been made on lines 3, 139, 148, and 229. Additionally, there's bad data (incorrect type) at least on line 18, although the code in `meteor_aggs.clean_meteor_data()` will safely handle that normally.
+
 # environment setup
 
 Per verbal instructions, this code is written to be run locally.
