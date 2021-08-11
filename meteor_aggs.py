@@ -5,9 +5,9 @@ import os
 import logging
 import argparse
 
+# Creating S3 client.
 def create_client(logger):
 	try:
-		logger.info(f'Creating S3 client.')
 		client = boto3.client('s3')
 		return client
 	except ClientError as e:
@@ -15,23 +15,24 @@ def create_client(logger):
         logger.error(err_str)
 		raise
 
+# Validating access to S3 bucket bucket.
 def test_bucket(bucket, client, logger):
 	try:
-		logger.info(f'Making HEAD call to S3 bucket {bucket}.')
 		response = client.head_bucket(Bucket=bucket)
 	except (ClientError, NoSuchBucket) as e:
 		err_str = f'Error making HEAD call to S3 bucket {bucket}. Exception raised:\n{e}'
 		logger.error(err_str)
 		raise
 
+# Retrieving list of objects in bucket.
 def build_key_list(bucket, client, logger):
-	logger.info('Building key list.')
 	test_bucket(bucket, client, logger)
+	
 	s3_keys = []
 	continuation_token = 'check'
+
 	while len(continuation_token) != 0:
 		try:
-			logger.info(f'Retrieving list of objects in {bucket}.')
 			response = client.list_objects_v2(Bucket=bucket)
 		except (ClientError, NoSuchBucket) as e:
 			err_str = f'Error listing objects in S3 bucket {bucket}. Exception raised:\n{e}'
@@ -49,6 +50,7 @@ def build_key_list(bucket, client, logger):
 	logger.debug(f'Retrieved {key_count} keys from {bucket}:\n{keys}')
 	return s3_keys
 
+# Reading meteorite JSONs and generating unprocessed dataframe.
 def generate_dataframe(bucket, logger):
 	client = create_client(logger)
 	s3_keys = build_key_list(bucket, client, logger)
@@ -66,11 +68,21 @@ def generate_dataframe(bucket, logger):
 		payload = response.get('Body')
 		raw_df = raw_df.append(pd.read_json(payload))
 
+	logger.debug(f'Unprocessed dataframe shape: {raw_df.shape}.')
+	logger.debug(raw_df.head(5))
 	return raw_df
 
+# Cleaning unprocessed dataframe.
 def clean_meteorite_data(bucket, logger):
 	raw_df = generate_dataframe(bucket, logger)
-	#####
+
+	cleaned_df = raw_df[['name', 'id', 'mass', 'fall', 'year']]
+	cleaned_df = cleaned_df.convert_dtypes().dropna()
+	cleaned_df['year'] = clenaed_df['year'].apply(lambda x:x[0:4])[0]
+	cleaned_df = cleaned_df[(cleaned_df['fall'] == 'Fell')]
+
+	logger.debug(f'Cleaned dataframe shape: {cleaned_df.shape}')
+	logger.debug(cleaned_df.head(5))
 	return cleaned_df
 
 def final aggregations(bucket, logger):

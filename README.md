@@ -37,9 +37,7 @@ Although it shouldn't matter, I would recommend running this code in a separate 
 # configuration and running
 
 Logging is set to a default local directory `tmp/logs/log_<datetime>.log`. Via CLI argument, this can be changed.
-- Logs will be written at the `INFO` level when the `--env` command line argument is set to `PROD` (default behaviour).
-- Setting `env` to `DEV` will result in logging at the `DEBUG level`.
-- Since it is only intended to be run locally, this code does not support writing logs to an S3 instance.
+- Since it is only intended to be run locally, this code does not support writing logs to an S3 instance. This is a simple implementation if required.
 
 The ingested S3 bucket can be similarly set as `--bucket` and defaults to `majorly-meteoric`.
 
