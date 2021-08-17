@@ -3,3 +3,4 @@ sample_*.json
 TODO.md
 __pycache__/
 tmp/
+*.sublime-workspace
