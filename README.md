@@ -4,13 +4,13 @@ Code and documentation for Expedia/AIM Takehome Project
 
 # about
 
-This code ingests a modest quantity of data from S3 on meteorite impacts (\~11 MB) and prints two aggregations:
-	- Average Meteorite Mass
-	- Year with Highest Count of Meteorite Impacts (`fall status attribute == "Fell"`)
+This code ingests a modest quantity of data from S3 on meteorite impacts (\~11 MB) and prints two aggregations:	
+- Average Meteorite Mass
+- Year with Highest Count of Meteorite Impacts (i.e., `fall status` attribute is `"Fell"`)
 
 # configuration and running
 
-If the default options are fine and dependencies are set up, running the code is as simple as opening your CLI, `cd`ing to the local directory where you've cloned the repo, typing `python meteor_aggregations_main.py`, and hitting enter.
+If the default options are fine for the user's needs and dependencies are set up (more info below), running the code is as simple as opening your CLI, `cd`ing to the local directory where you've cloned the repo, typing `python meteor_aggregations_main.py`, and hitting enter.
 
 Logging is set to a default local directory `tmp/logs/log_<process id>.log`. Via CLI argument, this can be changed.
 - Since it is only intended to be run locally, this code does not support writing logs to an S3 instance. This is a simple implementation if required.
